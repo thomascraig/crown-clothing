@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route,  Switch } from 'react-router-dom';
+import { Route,  Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import './App.css';
@@ -43,15 +43,25 @@ class App extends Component {
         <Switch>
           <Route exact path='/' component={HomePage} />
           <Route path='/shop' component={ShopPage} />
-          <Route path='/signin' component={SignInSignUpPage} />
+          <Route exact path='/signin' render={
+            () => this.props.currentUser ? 
+              (<Redirect to='/' />) :
+              (<SignInSignUpPage /> )
+             } />
         </Switch>
       </div>
     );
   }
 }
 
+// get the current user - either signed in user or null
+const mapStateToProps = ({ user }) => ({
+  currentUser: user.currentUser
+})
+
+// dispatch an action. This is the only way to trigger a state change
 const mapDispatchToProps = dispatch => ({
   setCurrentUser: user => dispatch(setCurrentUser(user))
 })
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
